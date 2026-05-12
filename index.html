@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="description" content="VetAtende Premium - Sistema de atendimento veterinário." />
+
+  <title>VetAtende Premium</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f4faf8;
+      color: #1f2933;
+      min-height: 100vh;
+      padding-bottom: 95px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f766e, #14b8a6);
+      padding: 24px 20px;
+      color: white;
+      border-radius: 0 0 28px 28px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .logo {
+      font-size: 1.7rem;
+      font-weight: bold;
+    }
+
+    .usuario {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .notificacao-bolinha {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #dc2626;
+      color: white;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border: 2px solid white;
+    }
+
+    .alertas-home {
+      padding: 0 20px 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .alerta-card {
+      background: #fff7ed;
+      border-left: 8px solid #f59e0b;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .alerta-card.urgente {
+      background: #fef2f2;
+      border-left-color: #dc2626;
+    }
+
+    .alerta-card h3 {
+      color: #92400e;
+      margin-bottom: 6px;
+    }
+
+    .alerta-card.urgente h3 {
+      color: #991b1b;
+    }
+
+    .alerta-card p {
+      color: #607d8b;
+      line-height: 1.5;
+    }
+
+    .tela {
+      display: none;
+      animation: fade 0.3s ease;
+    }
+
+    .tela.ativa {
+      display: block;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero {
+      padding: 30px 22px 15px;
+    }
+
+    .hero h1 {
+      color: #0f766e;
+      font-size: clamp(2rem, 7vw, 3.8rem);
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: #607d8b;
+      line-height: 1.7;
+      font-size: 1rem;
+      max-width: 800px;
+    }
+
+    .cards {
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 25px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+      transition: 0.25s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card h3 {
+      color: #0f766e;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .card p {
+      color: #607d8b;
+      line-height: 1.6;
+    }
+
+    .resumo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .resumo-card {
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .resumo-card h2 {
+      color: #0f766e;
+      font-size: 2rem;
+      margin-bottom: 5px;
+    }
+
+    .resumo-card p {
+      color: #607d8b;
+      font-size: 0.9rem;
+    }
+
+    .titulo-pagina {
+      padding: 25px 20px 5px;
+    }
+
+    .titulo-pagina h1 {
+      color: #0f766e;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .titulo-pagina p {
+      color: #607d8b;
+      line-height: 1.6;
+    }
+
+    .lista-pets,
+    .lista-itens {
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .pet-card,
+    .item-card {
+      background: white;
+      border-radius: 24px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .pet-foto {
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
+      background: #d1fae5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .pet-foto img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .pet-info {
+      flex: 1;
+    }
+
+    .pet-info h3,
+    .item-card h3 {
+      color: #0f766e;
+      margin-bottom: 5px;
+    }
+
+    .pet-info p,
+    .item-card p {
+      color: #607d8b;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
+    .formulario {
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .campo {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .campo label {
+      color: #334e68;
+      font-weight: bold;
+    }
+
+    .campo input,
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      border: 1px solid #d9e2ec;
+      background: white;
+      padding: 16px;
+      border-radius: 18px;
+      outline: none;
+      transition: 0.2s;
+      font-size: 1rem;
+    }
+
+    .campo textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .campo input:focus,
+    .campo select:focus,
+    .campo textarea:focus {
+      border-color: #14b8a6;
+      box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
+    }
+
+    .btn {
+      background: #0f766e;
+      color: white;
+      border: none;
+      padding: 15px 18px;
+      border-radius: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      width: 100%;
+      font-size: 1rem;
+    }
+
+    .btn:hover {
+      background: #115e59;
+    }
+
+    .btn-secundario {
+      background: #e0f2f1;
+      color: #0f766e;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .acoes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .status.saudavel {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status.observacao {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status.critico {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .vacinacao {
+      border-left: 8px solid #14b8a6;
+    }
+
+    .consulta {
+      border-left: 8px solid #0f766e;
+    }
+
+    .exame {
+      border-left: 8px solid #7c3aed;
+    }
+
+    .print-area {
+      background: white;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .linha-info {
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334e68;
+    }
+
+    @media print {
+      header,
+      .bottom-nav,
+      .acoes,
+      .btn,
+      .cards {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+        padding-bottom: 0;
+      }
+
+      .tela {
+        display: none !important;
+      }
+
+      #detalhes {
+        display: block !important;
+      }
+
+      .print-area {
+        box-shadow: none;
+        border-radius: 0;
+      }
+    }
+
+    .perfil-card {
+      margin: 20px;
+      background: white;
+      border-radius: 28px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #d1fae5;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.6rem;
+    }
+
+    .perfil-card h2 {
+      color: #0f766e;
+      margin-bottom: 8px;
+    }
+
+    .perfil-card p {
+      color: #607d8b;
+    }
+
+    .mensagem-vazia {
+      background: white;
+      padding: 26px;
+      border-radius: 24px;
+      text-align: center;
+      color: #607d8b;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      padding: 12px 8px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #e2e8f0;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.06);
+      z-index: 999;
+    }
+
+    .bottom-nav button {
+      border: none;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #607d8b;
+      cursor: pointer;
+      font-size: 0.82rem;
+      padding: 5px;
+    }
+
+    .bottom-nav button.ativo {
+      color: #0f766e;
+      font-weight: bold;
+    }
+
+    @media (min-width: 768px) {
+      .cards,
+      .lista-pets,
+      .lista-itens,
+      .formulario {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .campo.full {
+        grid-column: 1 / -1;
+      }
+
+      .bottom-nav {
+        width: 520px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 28px 28px 0 0;
+      }
+    }
+
+    @media (min-width: 1100px) {
+      .cards,
+      .lista-pets,
+      .lista-itens {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .formulario {
+        max-width: 900px;
+        margin: auto;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .resumo-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .acoes {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topo">
+      <div class="logo">🐾 VetAtende</div>
+      <div class="usuario" onclick="mostrarTela('inicio')">
+        🔔
+        <span id="contadorNotificacoes" class="notificacao-bolinha">0</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- INÍCIO -->
+    <section id="inicio" class="tela ativa">
+      <div class="hero">
+        <h1>Cuidando do seu pet com amor ❤️</h1>
+        <p>Sistema inteligente para clínicas veterinárias, consultas, vacinas, exames e gerenciamento completo dos animais.</p>
+      </div>
+
+      <div class="resumo-grid">
+        <div class="resumo-card">
+          <h2 id="totalPets">0</h2>
+          <p>Pets cadastrados</p>
+        </div>
+        <div class="resumo-card">
+          <h2 id="totalVacinas">0</h2>
+          <p>Vacinas registradas</p>
+        </div>
+        <div class="resumo-card">
+          <h2 id="totalConsultas">0</h2>
+          <p>Consultas agendadas</p>
+        </div>
+      </div>
+
+      <div class="titulo-pagina">
+        <h1>Avisos importantes</h1>
+        <p>Alertas de consultas e vacinações próximas.</p>
+      </div>
+      <div id="alertasHome" class="alertas-home"></div>
+
+      <section class="cards">
+        <div class="card">
+          <h3>🐶 Pets cadastrados</h3>
+          <p>Gerencie todos os animais da clínica em um só lugar.</p>
+          <br />
+          <button class="btn" onclick="mostrarTela('animais')">Ver Pets</button>
+        </div>
+
+        <div class="card">
+          <h3>➕ Novo Animal</h3>
+          <p>Cadastre rapidamente um novo pet no sistema.</p>
+          <br />
+          <button class="btn" onclick="mostrarTela('novo')">Cadastrar</button>
+        </div>
+
+        <div class="card">
+          <h3>💉 Vacinação</h3>
+          <p>Controle completo da carteira vacinal.</p>
+          <br />
+          <button class="btn" onclick="mostrarTela('vacinas')">Ver Vacinas</button>
+        </div>
+
+        <div class="card">
+          <h3>📅 Consultas</h3>
+          <p>Organize consultas e agendamentos veterinários.</p>
+          <br />
+          <button class="btn" onclick="mostrarTela('consultas')">Ver Agenda</button>
+        </div>
+
+        <div class="card">
+          <h3>🧪 Exames</h3>
+          <p>Acompanhe exames laboratoriais e observações.</p>
+          <br />
+          <button class="btn" onclick="mostrarTela('exames')">Ver Exames</button>
+        </div>
+
+        <div class="card">
+          <h3>👤 Perfil</h3>
+          <p>Configurações do aplicativo e informações da conta.</p>
+          <br />
+          <button class="btn" onclick="mostrarTela('perfil')">Abrir Perfil</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ANIMAIS -->
+    <section id="animais" class="tela">
+      <div class="titulo-pagina">
+        <h1>Meus Animais</h1>
+        <p>Veja todos os pets cadastrados no sistema.</p>
+      </div>
+
+      <div class="cards">
+        <button class="btn" onclick="mostrarTela('novo')">+ Cadastrar novo pet</button>
+        <button class="btn btn-danger" onclick="limparPets()">Limpar pets cadastrados</button>
+      </div>
+
+      <div id="listaPets" class="lista-pets"></div>
+    </section>
+
+    <!-- NOVO ANIMAL -->
+    <section id="novo" class="tela">
+      <div class="titulo-pagina">
+        <h1>Novo Animal</h1>
+        <p>Preencha os dados do pet para cadastrar.</p>
+      </div>
+
+      <form id="formPet" class="formulario">
+        <div class="campo">
+          <label for="nomePet">Nome do pet</label>
+          <input type="text" id="nomePet" required placeholder="Ex: Rex" />
+        </div>
+
+        <div class="campo">
+          <label for="especiePet">Espécie</label>
+          <select id="especiePet" required>
+            <option value="">Selecione</option>
+            <option>Cachorro</option>
+            <option>Gato</option>
+            <option>Ave</option>
+            <option>Coelho</option>
+            <option>Outro</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="racaPet">Raça</label>
+          <input type="text" id="racaPet" placeholder="Ex: Labrador" />
+        </div>
+
+        <div class="campo">
+          <label for="sexoPet">Sexo</label>
+          <select id="sexoPet">
+            <option>Macho</option>
+            <option>Fêmea</option>
+            <option>Não informado</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="idadePet">Idade</label>
+          <input type="text" id="idadePet" placeholder="Ex: 3 anos" />
+        </div>
+
+        <div class="campo">
+          <label for="pesoPet">Peso</label>
+          <input type="text" id="pesoPet" placeholder="Ex: 28kg" />
+        </div>
+
+        <div class="campo">
+          <label for="statusPet">Status</label>
+          <select id="statusPet">
+            <option value="saudavel">Saudável</option>
+            <option value="observacao">Observação</option>
+            <option value="critico">Crítico</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="emojiPet">Ícone do pet</label>
+          <select id="emojiPet">
+            <option>🐶</option>
+            <option>🐱</option>
+            <option>🐰</option>
+            <option>🐦</option>
+            <option>🐾</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="fotoPet">Foto do pet</label>
+          <input type="file" id="fotoPet" accept="image/*" capture="environment" />
+        </div>
+
+        <div class="campo full">
+          <label for="obsPet">Observações</label>
+          <textarea id="obsPet" placeholder="Ex: pet alérgico a determinado medicamento"></textarea>
+        </div>
+
+        <div class="campo full">
+          <h3 style="color:#0f766e;">📅 Dados da Consulta</h3>
+        </div>
+
+        <div class="campo">
+          <label for="tipoConsulta">Tipo de consulta</label>
+          <input type="text" id="tipoConsulta" placeholder="Ex: Consulta geral, retorno, emergência" />
+        </div>
+
+        <div class="campo">
+          <label for="dataConsulta">Data da consulta</label>
+          <input type="date" id="dataConsulta" />
+        </div>
+
+        <div class="campo">
+          <label for="horaConsulta">Horário da consulta</label>
+          <input type="time" id="horaConsulta" />
+        </div>
+
+        <div class="campo">
+          <label for="veterinarioConsulta">Veterinário responsável</label>
+          <input type="text" id="veterinarioConsulta" placeholder="Ex: Dr(a). Ana" />
+        </div>
+
+        <div class="campo full">
+          <label for="obsConsulta">Observação da consulta</label>
+          <textarea id="obsConsulta" placeholder="Ex: animal deve vir em jejum"></textarea>
+        </div>
+
+        <div class="campo full">
+          <h3 style="color:#0f766e;">💉 Dados da Vacinação</h3>
+        </div>
+
+        <div class="campo">
+          <label for="nomeVacina">Nome da vacina</label>
+          <input type="text" id="nomeVacina" placeholder="Ex: V10, Antirrábica" />
+        </div>
+
+        <div class="campo">
+          <label for="dataVacina">Data da vacinação</label>
+          <input type="date" id="dataVacina" />
+        </div>
+
+        <div class="campo">
+          <label for="proximaVacina">Próxima dose</label>
+          <input type="date" id="proximaVacina" />
+        </div>
+
+        <div class="campo">
+          <label for="loteVacina">Lote da vacina</label>
+          <input type="text" id="loteVacina" placeholder="Ex: LOTE123" />
+        </div>
+
+        <div class="campo full">
+          <label for="obsVacina">Observação da vacina</label>
+          <textarea id="obsVacina" placeholder="Ex: primeira dose aplicada"></textarea>
+        </div>
+
+        <button class="btn campo full" type="submit">Salvar Pet</button>
+      </form>
+    </section>
+
+    <!-- DETALHES -->
+    <section id="detalhes" class="tela">
+      <div class="titulo-pagina">
+        <h1>Detalhes do Pet</h1>
+        <p>Informações completas do animal selecionado.</p>
+      </div>
+
+      <div id="detalhesPet" class="lista-itens"></div>
+    </section>
+
+    <!-- VACINAS -->
+    <section id="vacinas" class="tela">
+      <div class="titulo-pagina">
+        <h1>Vacinas</h1>
+        <p>Controle de vacinação dos animais.</p>
+      </div>
+
+      <div id="listaVacinas" class="lista-itens"></div>
+    </section>
+
+    <!-- CONSULTAS -->
+    <section id="consultas" class="tela">
+      <div class="titulo-pagina">
+        <h1>Consultas</h1>
+        <p>Agenda de consultas veterinárias.</p>
+      </div>
+
+      <div id="listaConsultas" class="lista-itens"></div>
+    </section>
+
+    <!-- EXAMES -->
+    <section id="exames" class="tela">
+      <div class="titulo-pagina">
+        <h1>Exames</h1>
+        <p>Resultados e acompanhamentos laboratoriais.</p>
+      </div>
+
+      <div class="lista-itens">
+        <div class="item-card exame">
+          <div class="pet-foto">🧪</div>
+          <div>
+            <h3>Hemograma</h3>
+            <p>Resultado disponível para análise.</p>
+            <span class="status saudavel">Disponível</span>
+          </div>
+        </div>
+
+        <div class="item-card exame">
+          <div class="pet-foto">🔬</div>
+          <div>
+            <h3>Ultrassom</h3>
+            <p>Aguardando laudo veterinário.</p>
+            <span class="status observacao">Aguardando</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERFIL -->
+    <section id="perfil" class="tela">
+      <div class="titulo-pagina">
+        <h1>Perfil</h1>
+        <p>Configurações e informações do aplicativo.</p>
+      </div>
+
+      <div class="perfil-card">
+        <div class="avatar">👤</div>
+        <h2>Administrador VetAtende</h2>
+        <p>Gerenciamento veterinário</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <h3>🌙 Tema</h3>
+          <p>Modo claro ativado</p>
+        </div>
+        <div class="card">
+          <h3>🔔 Notificações</h3>
+          <p>Lembretes de consultas e vacinas</p>
+        </div>
+        <div class="card">
+          <h3>📱 PWA</h3>
+          <p>Instalável no celular e computador</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MENU INFERIOR -->
+  <nav class="bottom-nav">
+    <button class="ativo" data-tela="inicio" onclick="mostrarTela('inicio')">
+      🏠
+      <span>Início</span>
+    </button>
+
+    <button data-tela="animais" onclick="mostrarTela('animais')">
+      🐾
+      <span>Pets</span>
+    </button>
+
+    <button data-tela="novo" onclick="mostrarTela('novo')">
+      ➕
+      <span>Novo</span>
+    </button>
+
+    <button data-tela="vacinas" onclick="mostrarTela('vacinas')">
+      💉
+      <span>Vacinas</span>
+    </button>
+
+    <button data-tela="perfil" onclick="mostrarTela('perfil')">
+      👤
+      <span>Perfil</span>
+    </button>
+  </nav>
+
+  <script>
+    // PWA - SERVICE WORKER
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log('Service Worker registrado'))
+          .catch((erro) => console.log('Erro no Service Worker:', erro));
+      });
+    }
+
+    const formPet = document.getElementById('formPet');
+
+    function mostrarTela(id) {
+      document.querySelectorAll('.tela').forEach((tela) => {
+        tela.classList.remove('ativa');
+      });
+
+      const telaSelecionada = document.getElementById(id);
+      if (telaSelecionada) {
+        telaSelecionada.classList.add('ativa');
+      }
+
+      document.querySelectorAll('.bottom-nav button').forEach((botao) => {
+        botao.classList.remove('ativo');
+      });
+
+      const botaoAtivo = document.querySelector(`.bottom-nav button[data-tela="${id}"]`);
+      if (botaoAtivo) {
+        botaoAtivo.classList.add('ativo');
+      }
+
+      if (id === 'animais' || id === 'inicio') {
+        renderizarPets();
+      }
+
+      if (id === 'vacinas') {
+        renderizarVacinas();
+      }
+
+      if (id === 'consultas') {
+        renderizarConsultas();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function obterPets() {
+      return JSON.parse(localStorage.getItem('petsVetAtende')) || [];
+    }
+
+    function salvarPets(pets) {
+      localStorage.setItem('petsVetAtende', JSON.stringify(pets));
+      atualizarDashboard();
+    }
+
+    function dataHojeSemHora() {
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      return hoje;
+    }
+
+    function diferencaDias(dataISO) {
+      if (!dataISO || dataISO === 'Não informada') return null;
+      const hoje = dataHojeSemHora();
+      const data = new Date(dataISO + 'T00:00:00');
+      const diff = data.getTime() - hoje.getTime();
+      return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+
+    function criarAlertas() {
+      const pets = obterPets();
+      const alertas = [];
+
+      pets.forEach((pet) => {
+        const diasConsulta = diferencaDias(pet.consulta?.data);
+        if (diasConsulta !== null && diasConsulta >= 0 && diasConsulta <= 7 && pet.consulta?.tipo !== 'Não informada') {
+          alertas.push({
+            tipo: 'consulta',
+            urgente: diasConsulta <= 1,
+            titulo: diasConsulta === 0 ? 'Consulta marcada para hoje' : `Consulta em ${diasConsulta} dia(s)`,
+            texto: `${pet.nome} • ${pet.consulta.tipo} • ${formatarData(pet.consulta.data)} às ${pet.consulta.hora}`
+          });
+        }
+
+        const diasVacina = diferencaDias(pet.vacina?.proximaDose);
+        if (diasVacina !== null && diasVacina >= 0 && diasVacina <= 7 && pet.vacina?.nome !== 'Não informada') {
+          alertas.push({
+            tipo: 'vacina',
+            urgente: diasVacina <= 1,
+            titulo: diasVacina === 0 ? 'Vacinação marcada para hoje' : `Vacinação em ${diasVacina} dia(s)`,
+            texto: `${pet.nome} • ${pet.vacina.nome} • próxima dose em ${formatarData(pet.vacina.proximaDose)}`
+          });
+        }
+      });
+
+      return alertas;
+    }
+
+    function atualizarDashboard() {
+      const pets = obterPets();
+      const totalPets = document.getElementById('totalPets');
+      const totalVacinas = document.getElementById('totalVacinas');
+      const totalConsultas = document.getElementById('totalConsultas');
+      const contadorNotificacoes = document.getElementById('contadorNotificacoes');
+      const alertasHome = document.getElementById('alertasHome');
+
+      const vacinas = pets.filter((pet) => pet.vacina && pet.vacina.nome !== 'Não informada');
+      const consultas = pets.filter((pet) => pet.consulta && pet.consulta.tipo !== 'Não informada');
+      const alertas = criarAlertas();
+
+      if (totalPets) totalPets.textContent = pets.length;
+      if (totalVacinas) totalVacinas.textContent = vacinas.length;
+      if (totalConsultas) totalConsultas.textContent = consultas.length;
+
+      if (contadorNotificacoes) {
+        contadorNotificacoes.textContent = alertas.length;
+        contadorNotificacoes.style.display = alertas.length > 0 ? 'flex' : 'none';
+      }
+
+      if (alertasHome) {
+        if (alertas.length === 0) {
+          alertasHome.innerHTML = `
+            <div class="mensagem-vazia">
+              <h3>Nenhum alerta próximo</h3>
+              <p>Consultas e vacinações próximas aparecerão aqui automaticamente.</p>
+            </div>
+          `;
+        } else {
+          alertasHome.innerHTML = alertas.map((alerta) => `
+            <div class="alerta-card ${alerta.urgente ? 'urgente' : ''}">
+              <h3>${alerta.tipo === 'consulta' ? '📅' : '💉'} ${alerta.titulo}</h3>
+              <p>${alerta.texto}</p>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    formPet.addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+
+      const pet = {
+        id: Date.now(),
+        nome: document.getElementById('nomePet').value.trim(),
+        especie: document.getElementById('especiePet').value,
+        raca: document.getElementById('racaPet').value.trim() || 'Não informada',
+        sexo: document.getElementById('sexoPet').value,
+        idade: document.getElementById('idadePet').value.trim() || 'Não informada',
+        peso: document.getElementById('pesoPet').value.trim() || 'Não informado',
+        status: document.getElementById('statusPet').value,
+        emoji: document.getElementById('emojiPet').value,
+        observacoes: document.getElementById('obsPet').value.trim() || 'Nenhuma observação.',
+        foto: await converterFotoBase64(document.getElementById('fotoPet')),
+        consulta: {
+          tipo: document.getElementById('tipoConsulta').value.trim() || 'Não informada',
+          data: document.getElementById('dataConsulta').value || 'Não informada',
+          hora: document.getElementById('horaConsulta').value || 'Não informado',
+          veterinario: document.getElementById('veterinarioConsulta').value.trim() || 'Não informado',
+          observacao: document.getElementById('obsConsulta').value.trim() || 'Nenhuma observação.'
+        },
+        vacina: {
+          nome: document.getElementById('nomeVacina').value.trim() || 'Não informada',
+          data: document.getElementById('dataVacina').value || 'Não informada',
+          proximaDose: document.getElementById('proximaVacina').value || 'Não informada',
+          lote: document.getElementById('loteVacina').value.trim() || 'Não informado',
+          observacao: document.getElementById('obsVacina').value.trim() || 'Nenhuma observação.'
+        },
+        dataCadastro: new Date().toLocaleString('pt-BR')
+      };
+
+      const pets = obterPets();
+      pets.unshift(pet);
+      salvarPets(pets);
+
+      alert('Pet cadastrado com sucesso!');
+      formPet.reset();
+      renderizarPets();
+      mostrarTela('animais');
+    });
+
+    function converterFotoBase64(input) {
+      return new Promise((resolve) => {
+        const arquivo = input.files[0];
+
+        if (!arquivo) {
+          resolve('');
+          return;
+        }
+
+        const leitor = new FileReader();
+        leitor.onload = () => resolve(leitor.result);
+        leitor.onerror = () => resolve('');
+        leitor.readAsDataURL(arquivo);
+      });
+    }
+
+    function fotoOuEmoji(pet) {
+      if (pet.foto) {
+        return `<img src="${pet.foto}" alt="Foto de ${pet.nome}">`;
+      }
+
+      return pet.emoji || '🐾';
+    }
+
+    function nomeStatus(status) {
+      if (status === 'saudavel') return 'Saudável';
+      if (status === 'observacao') return 'Observação';
+      if (status === 'critico') return 'Crítico';
+      return 'Saudável';
+    }
+
+    function renderizarPets() {
+      const pets = obterPets();
+      const listaPets = document.getElementById('listaPets');
+      const totalPets = document.getElementById('totalPets');
+
+      atualizarDashboard();
+
+      if (!listaPets) return;
+
+      if (pets.length === 0) {
+        listaPets.innerHTML = `
+          <div class="mensagem-vazia">
+            <h3>Nenhum pet cadastrado</h3>
+            <p>Clique em “Novo” para cadastrar o primeiro animal.</p>
+          </div>
+        `;
+        return;
+      }
+
+      listaPets.innerHTML = pets.map((pet) => `
+        <div class="pet-card">
+          <div class="pet-foto">${fotoOuEmoji(pet)}</div>
+
+          <div class="pet-info">
+            <h3>${pet.nome}</h3>
+            <p>${pet.especie} • ${pet.raca}</p>
+            <p>${pet.idade} • ${pet.peso}</p>
+            <span class="status ${pet.status}">${nomeStatus(pet.status)}</span>
+
+            <div class="acoes">
+              <button class="btn btn-secundario" onclick="verDetalhes(${pet.id})">Detalhes</button>
+              <button class="btn btn-danger" onclick="excluirPet(${pet.id})">Excluir</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function verDetalhes(id) {
+      const pets = obterPets();
+      const pet = pets.find((item) => item.id === id);
+      const detalhes = document.getElementById('detalhesPet');
+
+      if (!pet || !detalhes) return;
+
+      detalhes.innerHTML = `
+        <div class="print-area" id="fichaImpressao">
+          <div class="pet-card">
+            <div class="pet-foto">${fotoOuEmoji(pet)}</div>
+            <div class="pet-info">
+              <h3>Ficha Técnica - ${pet.nome}</h3>
+              <p><strong>Espécie:</strong> ${pet.especie}</p>
+              <p><strong>Raça:</strong> ${pet.raca}</p>
+              <p><strong>Sexo:</strong> ${pet.sexo}</p>
+              <p><strong>Idade:</strong> ${pet.idade}</p>
+              <p><strong>Peso:</strong> ${pet.peso}</p>
+              <p><strong>Status:</strong> ${nomeStatus(pet.status)}</p>
+              <p><strong>Cadastro:</strong> ${pet.dataCadastro}</p>
+              <p><strong>Observações:</strong> ${pet.observacoes}</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>📅 Consulta</h3>
+            <p class="linha-info"><strong>Tipo:</strong> ${pet.consulta?.tipo || 'Não informada'}</p>
+            <p class="linha-info"><strong>Data:</strong> ${formatarData(pet.consulta?.data)}</p>
+            <p class="linha-info"><strong>Horário:</strong> ${pet.consulta?.hora || 'Não informado'}</p>
+            <p class="linha-info"><strong>Veterinário:</strong> ${pet.consulta?.veterinario || 'Não informado'}</p>
+            <p class="linha-info"><strong>Observação:</strong> ${pet.consulta?.observacao || 'Nenhuma observação.'}</p>
+          </div>
+
+          <div class="card">
+            <h3>💉 Vacinação</h3>
+            <p class="linha-info"><strong>Vacina:</strong> ${pet.vacina?.nome || 'Não informada'}</p>
+            <p class="linha-info"><strong>Data aplicada:</strong> ${formatarData(pet.vacina?.data)}</p>
+            <p class="linha-info"><strong>Próxima dose:</strong> ${formatarData(pet.vacina?.proximaDose)}</p>
+            <p class="linha-info"><strong>Lote:</strong> ${pet.vacina?.lote || 'Não informado'}</p>
+            <p class="linha-info"><strong>Observação:</strong> ${pet.vacina?.observacao || 'Nenhuma observação.'}</p>
+          </div>
+        </div>
+
+        <div class="cards">
+          <button class="btn" onclick="imprimirFicha(${pet.id})">🖨️ Imprimir ficha técnica</button>
+          <button class="btn btn-secundario" onclick="mostrarTela('animais')">Voltar para pets</button>
+        </div>
+      `;
+
+      mostrarTela('detalhes');
+    }
+
+    function formatarData(data) {
+      if (!data || data === 'Não informada') return 'Não informada';
+      const partes = data.split('-');
+      if (partes.length !== 3) return data;
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function renderizarConsultas() {
+      const container = document.getElementById('listaConsultas');
+      if (!container) return;
+
+      const pets = obterPets();
+      const comConsulta = pets.filter((pet) => pet.consulta && pet.consulta.tipo !== 'Não informada');
+
+      if (comConsulta.length === 0) {
+        container.innerHTML = `
+          <div class="mensagem-vazia">
+            <h3>Nenhuma consulta cadastrada</h3>
+            <p>Cadastre um pet e preencha os dados da consulta.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = comConsulta.map((pet) => `
+        <div class="item-card consulta">
+          <div class="pet-foto">📅</div>
+          <div>
+            <h3>${pet.consulta.tipo}</h3>
+            <p><strong>Pet:</strong> ${pet.nome}</p>
+            <p><strong>Data:</strong> ${formatarData(pet.consulta.data)} às ${pet.consulta.hora}</p>
+            <p><strong>Veterinário:</strong> ${pet.consulta.veterinario}</p>
+            <p>${pet.consulta.observacao}</p>
+            <span class="status observacao">Agendada</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderizarVacinas() {
+      const container = document.getElementById('listaVacinas');
+      if (!container) return;
+
+      const pets = obterPets();
+      const comVacina = pets.filter((pet) => pet.vacina && pet.vacina.nome !== 'Não informada');
+
+      if (comVacina.length === 0) {
+        container.innerHTML = `
+          <div class="mensagem-vazia">
+            <h3>Nenhuma vacina cadastrada</h3>
+            <p>Cadastre um pet e preencha os dados da vacinação.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = comVacina.map((pet) => `
+        <div class="item-card vacinacao">
+          <div class="pet-foto">💉</div>
+          <div>
+            <h3>${pet.vacina.nome}</h3>
+            <p><strong>Pet:</strong> ${pet.nome}</p>
+            <p><strong>Aplicada em:</strong> ${formatarData(pet.vacina.data)}</p>
+            <p><strong>Próxima dose:</strong> ${formatarData(pet.vacina.proximaDose)}</p>
+            <p><strong>Lote:</strong> ${pet.vacina.lote}</p>
+            <p>${pet.vacina.observacao}</p>
+            <span class="status saudavel">Registrada</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function imprimirFicha(id) {
+      verDetalhes(id);
+      setTimeout(() => {
+        window.print();
+      }, 300);
+    }
+
+    function excluirPet(id) {
+      const confirmar = confirm('Deseja excluir este pet?');
+      if (!confirmar) return;
+
+      const pets = obterPets().filter((pet) => pet.id !== id);
+      salvarPets(pets);
+      renderizarPets();
+      renderizarConsultas();
+      renderizarVacinas();
+    }
+
+    function limparPets() {
+      const confirmar = confirm('Deseja apagar todos os pets cadastrados?');
+      if (!confirmar) return;
+
+      localStorage.removeItem('petsVetAtende');
+      renderizarPets();
+      renderizarConsultas();
+      renderizarVacinas();
+      atualizarDashboard();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderizarPets();
+      renderizarConsultas();
+      renderizarVacinas();
+      atualizarDashboard();
+      mostrarTela('inicio');
+    });
+  </script>
+</body>
+</html>
